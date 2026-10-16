@@ -31,11 +31,18 @@ available, explicitly without captured runtime evidence. No upload happens until
 the user consents and chooses Submit for review. The optional GitHub issue form
 is no longer the intended primary submission route.
 
-The public no-account intake uses a separate persistent Sites/Cloudflare D1
-service. `site/config.mjs` keeps it disabled until deployment and anonymous
-read/write/moderation-isolation checks pass. While disabled, saving reports and
-the optional GitHub route work; the website must not claim that it accepted an
-online submission. No runtime secret, reviewer email, or write token belongs here.
+The public no-account intake is live on a separate persistent Sites/Cloudflare D1
+service at https://uif-community-reports.freepig18.chatgpt.site . New reports enter
+a private review queue and receive a status receipt. Reviewer sign-in is at
+https://uif-community-reports.freepig18.chatgpt.site/review . Submitters need no
+GitHub or ChatGPT account. Only the configured reviewer can publish or remove
+reports; there is no automatic publication.
+
+`site/config.mjs` enables intake after deployment and anonymous read/write,
+moderation-isolation and forged-identity checks. If intake must be disabled,
+saving reports and the optional GitHub route still work, and the website clearly
+states that online submission is unavailable. No runtime secret, reviewer email,
+or write token belongs in this repository.
 
 Reports retain exact UIF informational versions, base IDs, scalar build options,
 original/packaged runtime SHA-256 and configuration hashes where recorded.

@@ -7,6 +7,7 @@ const output = process.env.QA_OUTPUT || 'outputs/browser-qa';
 async function main() {
   fs.mkdirSync(output, { recursive: true });
   const { report } = await import('../tests/fixtures.mjs');
+  const { intakeEnabled } = await import('../site/config.mjs');
   const fixture = { schemaVersion: 1, reports: [{ report: report(), review: { reviewer: 'Test fixture', reviewedAtUtc: '2026-10-16T00:00:00Z', issueUrl: '' } }] };
   const browser = await chromium.launch({ channel: 'msedge', headless: true });
   try {
@@ -51,17 +52,21 @@ async function main() {
     }
     const real = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
     const livePage = await real.newPage(), apiRequests=[];
+    if(intakeEnabled && base.startsWith('http://127.0.0.1:'))await livePage.route('**/api/reports',route=>route.fulfill({json:{schemaVersion:1,reports:[]},headers:{'Access-Control-Allow-Origin':'*'}}));
     livePage.on('request',request=>{if(request.url().includes('freepig18.chatgpt.site/api/'))apiRequests.push(request.url());});
     await livePage.goto(base);await livePage.locator('#count').filter({hasText:'0 reports'}).waitFor();
-    await livePage.locator('#nav-submit').click();assert.equal(await livePage.locator('#send').isDisabled(),true);
-    assert.match(await livePage.locator('#submission-status').innerText(),/not enabled yet/);assert.deepEqual(apiRequests,[]);
-    await livePage.screenshot({path:path.join(output,'actual-disabled-intake.png'),fullPage:true});
+    await livePage.locator('#nav-submit').click();assert.equal(await livePage.locator('#send').isDisabled(),!intakeEnabled);
+    if(intakeEnabled){assert.ok(apiRequests.some(url=>url.includes('/api/reports')));assert.equal(await livePage.locator('#load-error').isVisible(),false);}
+    else{assert.match(await livePage.locator('#submission-status').innerText(),/not enabled yet/);assert.deepEqual(apiRequests,[]);}
+    assert.ok(!apiRequests.some(url=>url.includes('/api/submissions')));
+    await livePage.screenshot({path:path.join(output,'actual-'+(intakeEnabled?'enabled':'disabled')+'-intake.png'),fullPage:true});
     await livePage.locator('#nav-reports').click();
     await livePage.route('**/data/reports.json',route=>route.fulfill({status:503,body:'Unavailable'}));await livePage.reload();
+    if(intakeEnabled){await livePage.route('**/api/reports',route=>route.fulfill({status:503,json:{error:'Authored outage fixture'},headers:{'Access-Control-Allow-Origin':'*'}}));await livePage.reload();}
     await livePage.waitForFunction(()=>document.getElementById('count').textContent==='Reports unavailable');
     await livePage.locator('#search').fill('anything');assert.equal(await livePage.locator('#count').innerText(),'Reports unavailable');
     assert.equal(await livePage.locator('#empty').isVisible(),false);assert.equal(await livePage.locator('#download').isDisabled(),true);await real.close();
-    console.log('Actual disabled-intake UI passed without API requests');
+    console.log('Actual intake state and no automatic submission passed; unavailable sources remain explicit');
   } finally { await browser.close(); }
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

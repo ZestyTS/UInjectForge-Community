@@ -2,5 +2,5 @@
   "name": "uinjectforge-community",
   "private": true,
   "type": "module",
-  "scripts": { "test": "node --test tests/*.test.mjs", "validate": "node tools/validate.mjs", "dev": "node tools/serve.mjs" }
+  "scripts": { "test": "node --test tests/*.test.mjs service/tests/*.test.mjs", "validate": "node tools/validate.mjs", "dev": "node tools/serve.mjs" }
 }

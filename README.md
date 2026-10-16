@@ -26,9 +26,16 @@ their reuse license, attribution and non-UIF scope are separately established.
 
 In UIF: Settings > Inject History, select a build, rate it, enter environment,
 region/revision and the specific checks actually performed, then export. Open the
-site's Submit section, choose that JSON and review it. Copy it and submit the
-GitHub form. Neither the application nor website uploads anything automatically.
-The first version requires a GitHub account; it does not embed a write token in UIF.
+site's Submit section, choose that JSON and review it. Manual entry is also
+available, explicitly without captured runtime evidence. No upload happens until
+the user consents and chooses Submit for review. The optional GitHub issue form
+is no longer the intended primary submission route.
+
+The public no-account intake uses a separate persistent Sites/Cloudflare D1
+service. `site/config.mjs` keeps it disabled until deployment and anonymous
+read/write/moderation-isolation checks pass. While disabled, saving reports and
+the optional GitHub route work; the website must not claim that it accepted an
+online submission. No runtime secret, reviewer email, or write token belongs here.
 
 Reports retain exact UIF informational versions, base IDs, scalar build options,
 original/packaged runtime SHA-256 and configuration hashes where recorded.
@@ -58,8 +65,17 @@ node --test tests/*.test.mjs
 node tools/validate.mjs
 ```
 
-Review the diff in a pull request. No issue-triggered privileged write workflow is
-included. The public site uses only safe text rendering and validated issue URLs.
+The no-account service stores new reports privately, deduplicates retries, and
+returns a receipt. Only its configured reviewer, authenticated by the hosting
+platform, can publish/remove results at `/review`. The public registry merges
+approved service reports with the reviewed GitHub JSON file, preserving distinct
+build evidence. Signed expiring one-use browser verification, bounded requests,
+strict schemas, intake limits and moderation reduce abuse; they do not eliminate
+it. Pending/rejected records older than 90 days are pruned during later intake or
+review activity. Rejected contents are erased immediately from active storage.
+
+For GitHub submissions, review the diff in a pull request. No issue-triggered
+privileged write workflow is included. The public site uses safe text rendering.
 Set Pages source to GitHub Actions. Reviewed pushes to main deploy the site;
 pull requests validate without deploying. The workflow can also be run manually.
 Do not enable Pages on the private application repository or publish its docs folder.

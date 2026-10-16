@@ -1,0 +1,3 @@
+export function report() { return { schemaVersion: 1, reportId: 'a'.repeat(32), reportedAtUtc: '2026-10-16T00:00:00Z', builtAtUtc: '2026-10-15T00:00:00Z',
+  uifVersion: '1.0.6+abc', console: 'Nds', outputMode: 'Installable', gameName: 'Authored test fixture', gameId: 'Test-01', gameRegion: 'USA', gameRevision: '', baseName: 'Test base', baseTitleId: '0005000012345678', customBase: false, buildSucceeded: true, environment: 'Aroma', outcome: 'Works', checks: { boot: 'Pass', save: 'Not tested' }, notes: 'Fixture only, never published.',
+  evidence: { runtime: 'NooDSAutoboot', settings: { 'nds.noods.frameskip': '1' }, fingerprints: { RuntimeSha256: 'A'.repeat(64) }, omittedOptions: 2, scope: 'Recorded inputs, not independent hardware verification.' } }; }

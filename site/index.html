@@ -1,46 +1,33 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="UIF-specific compatibility reports, exact build settings and runtime fingerprints.">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-  <title>UInjectForge Compatibility</title><link rel="icon" href="assets/uinjectforge-icon.png"><link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header><a class="brand" href="./"><img src="assets/uinjectforge-icon.png" alt="" width="36" height="36">UInjectForge <span>Compatibility</span></a><nav aria-label="Main"><a href="#reports">Reports</a><a href="#submit">Submit a result</a><a href="https://zestyts.itch.io/uinjectforge" rel="noreferrer">Get UIF</a></nav></header>
-  <main>
-    <section id="reports" aria-labelledby="heading">
-      <div class="heading"><div><h1>Compatibility Reports</h1><p>Individual test results for specific games, bases, UIF builds and runtimes.</p></div><a class="command" href="#submit">Submit a result</a></div>
-      <p class="notice">Reviewed means the report was checked for scope and privacy, not independently reproduced. A working report is not a guarantee for other builds or settings.</p>
-      <form class="filters" role="search" id="filters">
-        <label class="search">Search<input id="search" type="search" placeholder="Game, base, setting or SHA-256" maxlength="200"></label>
-        <label>System<select id="system"><option value="">All systems</option></select></label>
-        <label>Result<select id="outcome"><option value="">All results</option><option>Works</option><option>Issues</option><option>Broken</option></select></label>
-        <label>Environment<select id="environment"><option value="">All environments</option><option>Aroma</option><option>Tiramisu</option><option>Other</option><option>Unknown</option></select></label>
-        <label>UIF build<select id="version"><option value="">All builds</option></select></label>
-        <label>Runtime<select id="runtime"><option value="">All runtimes</option></select></label>
-        <button type="reset">Clear filters</button>
-      </form>
-      <div class="result-meta"><strong id="count" role="status">Loading reports...</strong><a href="data/reports.json" download>Download registry JSON</a></div>
-      <div class="table-scroll"><table><thead><tr><th>Game / System</th><th>Result</th><th>Base / Runtime</th><th>UIF / Environment</th><th>Report</th></tr></thead><tbody id="rows"></tbody></table></div>
-      <div id="empty" hidden><h2>No reports yet</h2><p>No public UIF reports have been accepted into this registry. Existing lists are reference material, not proof of a UIF build.</p></div>
-      <p id="load-error" role="alert" hidden></p>
-    </section>
-    <section id="submit" aria-labelledby="submit-heading">
-      <h2 id="submit-heading">Submit a Compatibility Result</h2>
-      <p class="privacy">Reports are public. Never submit ROMs, runtimes, keys, saves or support bundles. The file preview stays in your browser until you submit it yourself on GitHub.</p>
-      <div class="submit-layout"><div>
-        <label class="file-label">UIF compatibility report<input id="report-file" type="file" accept=".json,application/json"></label>
-        <p id="import-status" role="status">Export a rated build from UIF's Settings &gt; Inject History.</p>
-        <label class="consent"><input id="consent" type="checkbox" disabled>I reviewed the preview, removed personal information from names and notes, and agree to publish this report.</label>
-        <div class="actions"><button id="copy" disabled>Copy report JSON</button><a id="issue" class="command disabled" aria-disabled="true" tabindex="-1" rel="noreferrer" target="_blank">Open GitHub submission</a></div>
-        <p class="secondary">Paste the copied JSON into the report field. GitHub sign-in is required. Submissions enter a review queue, not the compatibility list.</p>
-        <p id="copy-status" role="status"></p>
-      </div><div><h3>Public Report Preview</h3><pre id="preview" tabindex="0">No report selected.</pre></div></div>
-    </section>
-    <section class="references" aria-labelledby="reference-heading"><h2 id="reference-heading">Other Compatibility References</h2><p>These belong to other projects and may use different bases, loaders or runtimes.</p><a href="https://uwuvci.net/" rel="noreferrer">UWUVCI</a><a href="https://wiki.gbatemp.net/wiki/Nintendont_Compatibility_List" rel="noreferrer">Nintendont</a><a href="https://github.com/ZestyTS/UInjectForge-Community" rel="noreferrer">Public data and corrections</a></section>
-  </main>
-  <footer>No analytics or automatic report uploads. GitHub hosts this site and submitted reports. <a href="privacy.html">Privacy</a></footer>
-  <dialog id="detail"><div class="detail-heading"><h2 id="detail-title">Report</h2><button id="close-detail" aria-label="Close report" title="Close report">Close</button></div><p id="detail-scope"></p><div id="detail-facts"></div><h3>Checks</h3><dl id="detail-checks"></dl><h3>Settings and Fingerprints</h3><pre id="detail-json" tabindex="0"></pre><h3>Notes</h3><p id="detail-notes"></p><a id="detail-source" rel="noreferrer" target="_blank">Public submission and review</a></dialog>
-  <script type="module" src="app.mjs"></script>
-</body></html>
+<html lang="en" data-theme="dark"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Community-tested game compatibility for UInjectForge. Share results without an account.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self' https://uif-community-reports.freepig18.chatgpt.site; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="color-scheme" content="dark light"><title>UInjectForge Community</title>
+<link rel="icon" href="assets/uinjectforge-icon.png"><link rel="stylesheet" href="style.css"></head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar"><a class="brand" href="#reports"><img src="assets/uinjectforge-icon.png" alt="" width="40" height="40"><span>UInjectForge<small>Community</small></span></a><nav aria-label="Main"><a href="#reports" id="nav-reports">Compatibility</a><a href="#submit" id="nav-submit">Submit a result</a></nav><div class="top-actions"><button id="theme" class="icon-button" title="Switch to light theme" aria-label="Switch to light theme"><img src="assets/sun.svg" alt="" width="19" height="19"></button><a class="get-uif" href="https://zestyts.itch.io/uinjectforge" rel="noreferrer">Get UIF</a></div></header>
+<div class="app-shell"><aside><h2>Systems</h2><nav id="system-nav" aria-label="Filter by system"></nav><div class="sidebar-bottom"><a href="https://github.com/ZestyTS/UInjectForge-Community" rel="noreferrer">Public project</a><a href="privacy.html">Privacy</a></div></aside>
+<main id="main" tabindex="-1"><section id="reports" aria-labelledby="heading">
+<div class="page-heading"><div><p class="eyebrow">COMMUNITY TESTING</p><h1 id="heading">Game compatibility</h1><p class="muted">Find tested combinations of games, bases, and runtimes.</p></div><a class="command primary" href="#submit">Submit a result</a></div>
+<div class="stats" aria-label="Registry summary"><div><strong id="total">0</strong><span>Reviewed reports</span></div><div><strong id="works-total">0</strong><span class="success-text">Working</span></div><div><strong id="issues-total">0</strong><span class="warning-text">With issues</span></div><div><strong id="broken-total">0</strong><span class="error-text">Not working</span></div></div>
+<form id="filters" role="search"><div class="search-row"><label class="search"><span class="sr-only">Search reports</span><input id="search" type="search" placeholder="Search games, bases, settings, or fingerprints" maxlength="200"></label><button type="reset" class="quiet">Clear filters</button></div><div class="filter-row"><label>System<select id="system"><option value="">All systems</option></select></label><label>Result<select id="outcome"><option value="">All results</option><option value="Works">Working</option><option value="Issues">With issues</option><option value="Broken">Not working</option></select></label><label>Environment<select id="environment"><option value="">All environments</option><option>Aroma</option><option>Tiramisu</option><option>Other</option><option>Unknown</option></select></label><label>UIF version<select id="version"><option value="">All versions</option></select></label><label>Runtime<select id="runtime"><option value="">All runtimes</option></select></label></div></form>
+<div class="result-meta"><strong id="count" role="status">Loading reports...</strong><button id="download" class="quiet" title="Download reviewed reports">Download data</button></div>
+<p id="load-error" class="notice error" role="alert" hidden></p>
+<div class="table-scroll"><table><thead><tr><th>Game</th><th>Result</th><th>Base / Runtime</th><th>UIF / Environment</th><th><span class="sr-only">Details</span></th></tr></thead><tbody id="rows"></tbody></table></div>
+<div id="empty" class="empty" hidden><img src="assets/uinjectforge-icon.png" alt="" width="72" height="72"><h2>No reports yet</h2><p>Be the first to share a tested UIF build.</p><a href="#submit" class="command primary">Share a result</a></div>
+<p class="scope-note">A report describes one tested build. Review checks scope and privacy, not independent reproduction. Other settings or runtimes can behave differently.</p>
+<div class="references"><h2>Other compatibility lists</h2><p class="muted">Reference material from other projects, not verified UIF results.</p><a href="https://uwuvci.net/" rel="noreferrer">UWUVCI</a><a href="https://wiki.gbatemp.net/wiki/Nintendont_Compatibility_List" rel="noreferrer">Nintendont</a></div></section>
+<section id="submit" aria-labelledby="submit-heading" hidden>
+<div class="page-heading"><div><p class="eyebrow">SHARE YOUR TEST</p><h1 id="submit-heading">Submit a result</h1><p class="muted">No GitHub account required. Every result is reviewed before publication.</p></div><a href="#reports" class="quiet command">Back to compatibility</a></div>
+<div class="submission-layout"><form id="submission"><div class="import-area"><label for="report-file">Import a UIF compatibility report <span class="muted">(optional)</span></label><input id="report-file" type="file" accept=".json,application/json"><p class="muted small">From UIF: Settings &gt; Inject History &gt; Export compatibility report. You can also enter the details below.</p><p id="import-status" role="status"></p></div>
+<h2>Build details</h2><div class="field-grid"><label>Game name<input id="game-name" maxlength="200" required autocomplete="off"></label><label>System<select id="report-system" required><option value="">Choose a system</option></select></label><label>UIF version<input id="uif-version" maxlength="120" required placeholder="e.g. 1.0.5"></label><label>Console environment<select id="report-environment"><option>Aroma</option><option>Tiramisu</option><option>Other</option><option>Unknown</option></select></label><label>Base game<input id="base-name" maxlength="200" required placeholder="Name of the base used"></label><label>Runtime<input id="report-runtime" maxlength="100" required placeholder="e.g. Virtual Console, NooDS"></label><label>Game region<input id="region" maxlength="40" placeholder="e.g. USA"></label><label>Game revision<input id="revision" maxlength="80" placeholder="Unknown if unsure"></label></div>
+<h2>Test result</h2><fieldset class="outcomes"><legend class="sr-only">Overall result</legend><label><input type="radio" name="result" value="Works" required>Working</label><label><input type="radio" name="result" value="Issues">With issues</label><label><input type="radio" name="result" value="Broken">Not working</label></fieldset>
+<div id="check-fields" class="field-grid checks"></div><label class="notes-label">Notes<textarea id="notes" rows="4" maxlength="4000" placeholder="What did you test? Describe any problems or required settings."></textarea></label>
+<label class="honey" aria-hidden="true">Website<input id="website" tabindex="-1" autocomplete="off"></label>
+<label class="consent"><input id="consent" type="checkbox" required>I reviewed this report, removed personal information, and agree to publish its contents.</label>
+<div class="actions"><button type="submit" id="send" class="primary">Submit for review</button><button type="button" id="export" class="quiet">Save report</button></div><p id="submission-status" role="status" class="status"></p></form>
+<div class="review-pane"><h2>Before you submit</h2><p>Include only the build you tested. Leave untested checks as <strong>Not tested</strong>.</p><p>Don't include games, keys, saves, support bundles, local paths, or personal information.</p><p class="small muted">Imported reports preserve UIF settings and SHA-256 fingerprints. Manual entries are marked as manual and do not claim captured runtime evidence.</p><details id="preview-details"><summary>Report preview</summary><pre id="preview" tabindex="0">Enter build details to preview the public report.</pre></details><div class="alternative"><h3>Prefer GitHub?</h3><p class="small muted">Save your report, then attach its contents to the optional issue form.</p><a id="issue" href="https://github.com/ZestyTS/UInjectForge-Community/issues/new?template=compatibility.yml" target="_blank" rel="noreferrer">Open GitHub form</a></div></div></div></section>
+<footer>Independent community reports for UInjectForge. <a href="privacy.html">Privacy &amp; submissions</a></footer></main></div>
+<dialog id="detail"><div class="detail-heading"><h2 id="detail-title">Report</h2><button id="close-detail" class="icon-button" aria-label="Close report" title="Close report"><img src="assets/x.svg" alt="" width="20" height="20"></button></div><p id="detail-scope" class="muted"></p><div id="detail-facts"></div><h3>Test checks</h3><dl id="detail-checks"></dl><h3>Notes</h3><p id="detail-notes" class="preserve-lines"></p><details><summary>Settings and fingerprints</summary><pre id="detail-json" tabindex="0"></pre></details><p id="detail-review" class="muted small"></p><a id="detail-source" rel="noreferrer" target="_blank" hidden>GitHub submission</a></dialog>
+<script type="module" src="app.mjs"></script></body></html>

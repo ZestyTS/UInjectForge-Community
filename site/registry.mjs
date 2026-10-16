@@ -54,7 +54,7 @@ export function validateRegistry(data) {
     object(entry.review, ['reviewer', 'reviewedAtUtc', 'issueUrl'], 'Review');
     text(entry.review.reviewer, 80, 'Reviewer', true);
     requireValue(Number.isFinite(Date.parse(entry.review.reviewedAtUtc)), 'Invalid review date.');
-    requireValue(/^https:\/\/github\.com\/ZestyTS\/UInjectForge-Community\/issues\/[1-9][0-9]*$/.test(entry.review.issueUrl), 'Review must link to a public submission.');
+    requireValue(entry.review.issueUrl === '' || /^https:\/\/github\.com\/ZestyTS\/UInjectForge-Community\/issues\/[1-9][0-9]*$/.test(entry.review.issueUrl), 'Invalid public review link.');
   }
   return data;
 }

@@ -1,0 +1,24 @@
+name: UIF compatibility result
+description: Submit an explicitly tested UIF build for review.
+title: "[Compatibility] "
+body:
+  - type: markdown
+    attributes:
+      value: "Reports and your GitHub identity are public. Submit only compatibility JSON, never support bundles, games, runtimes, keys, tickets or saves. Review does not mean independent reproduction."
+  - type: textarea
+    id: report
+    attributes:
+      label: Compatibility report JSON
+      description: Paste the JSON copied from the UIF compatibility site's public-report preview.
+      render: json
+    validations:
+      required: true
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Public submission
+      options:
+        - label: I tested this build and described only the checks I actually performed.
+          required: true
+        - label: I removed private information and consent to this report being stored publicly in the compatibility dataset.
+          required: true

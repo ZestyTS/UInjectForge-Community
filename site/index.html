@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="UIF-specific compatibility reports, exact build settings and runtime fingerprints.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>UInjectForge Compatibility</title><link rel="icon" href="assets/uinjectforge-icon.png"><link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header><a class="brand" href="./"><img src="assets/uinjectforge-icon.png" alt="" width="36" height="36">UInjectForge <span>Compatibility</span></a><nav aria-label="Main"><a href="#reports">Reports</a><a href="#submit">Submit a result</a><a href="https://zestyts.itch.io/uinjectforge" rel="noreferrer">Get UIF</a></nav></header>
+  <main>
+    <section id="reports" aria-labelledby="heading">
+      <div class="heading"><div><h1>Compatibility Reports</h1><p>Individual test results for specific games, bases, UIF builds and runtimes.</p></div><a class="command" href="#submit">Submit a result</a></div>
+      <p class="notice">Reviewed means the report was checked for scope and privacy, not independently reproduced. A working report is not a guarantee for other builds or settings.</p>
+      <form class="filters" role="search" id="filters">
+        <label class="search">Search<input id="search" type="search" placeholder="Game, base, setting or SHA-256" maxlength="200"></label>
+        <label>System<select id="system"><option value="">All systems</option></select></label>
+        <label>Result<select id="outcome"><option value="">All results</option><option>Works</option><option>Issues</option><option>Broken</option></select></label>
+        <label>Environment<select id="environment"><option value="">All environments</option><option>Aroma</option><option>Tiramisu</option><option>Other</option><option>Unknown</option></select></label>
+        <label>UIF build<select id="version"><option value="">All builds</option></select></label>
+        <label>Runtime<select id="runtime"><option value="">All runtimes</option></select></label>
+        <button type="reset">Clear filters</button>
+      </form>
+      <div class="result-meta"><strong id="count" role="status">Loading reports...</strong><a href="data/reports.json" download>Download registry JSON</a></div>
+      <div class="table-scroll"><table><thead><tr><th>Game / System</th><th>Result</th><th>Base / Runtime</th><th>UIF / Environment</th><th>Report</th></tr></thead><tbody id="rows"></tbody></table></div>
+      <div id="empty" hidden><h2>No reports yet</h2><p>No public UIF reports have been accepted into this registry. Existing lists are reference material, not proof of a UIF build.</p></div>
+      <p id="load-error" role="alert" hidden></p>
+    </section>
+    <section id="submit" aria-labelledby="submit-heading">
+      <h2 id="submit-heading">Submit a Compatibility Result</h2>
+      <p class="privacy">Reports are public. Never submit ROMs, runtimes, keys, saves or support bundles. The file preview stays in your browser until you submit it yourself on GitHub.</p>
+      <div class="submit-layout"><div>
+        <label class="file-label">UIF compatibility report<input id="report-file" type="file" accept=".json,application/json"></label>
+        <p id="import-status" role="status">Export a rated build from UIF's Settings &gt; Inject History.</p>
+        <label class="consent"><input id="consent" type="checkbox" disabled>I reviewed the preview, removed personal information from names and notes, and agree to publish this report.</label>
+        <div class="actions"><button id="copy" disabled>Copy report JSON</button><a id="issue" class="command disabled" aria-disabled="true" tabindex="-1" rel="noreferrer" target="_blank">Open GitHub submission</a></div>
+        <p class="secondary">Paste the copied JSON into the report field. GitHub sign-in is required. Submissions enter a review queue, not the compatibility list.</p>
+        <p id="copy-status" role="status"></p>
+      </div><div><h3>Public Report Preview</h3><pre id="preview" tabindex="0">No report selected.</pre></div></div>
+    </section>
+    <section class="references" aria-labelledby="reference-heading"><h2 id="reference-heading">Other Compatibility References</h2><p>These belong to other projects and may use different bases, loaders or runtimes.</p><a href="https://uwuvci.net/" rel="noreferrer">UWUVCI</a><a href="https://wiki.gbatemp.net/wiki/Nintendont_Compatibility_List" rel="noreferrer">Nintendont</a><a href="https://github.com/ZestyTS/UInjectForge-Community" rel="noreferrer">Public data and corrections</a></section>
+  </main>
+  <footer>No analytics or automatic report uploads. GitHub hosts this site and submitted reports. <a href="privacy.html">Privacy</a></footer>
+  <dialog id="detail"><div class="detail-heading"><h2 id="detail-title">Report</h2><button id="close-detail" aria-label="Close report" title="Close report">Close</button></div><p id="detail-scope"></p><div id="detail-facts"></div><h3>Checks</h3><dl id="detail-checks"></dl><h3>Settings and Fingerprints</h3><pre id="detail-json" tabindex="0"></pre><h3>Notes</h3><p id="detail-notes"></p><a id="detail-source" rel="noreferrer" target="_blank">Public submission and review</a></dialog>
+  <script type="module" src="app.mjs"></script>
+</body></html>

@@ -105,8 +105,11 @@ export async function handle(request, env) {
       if(!isModerator(request.headers,env))fail(403,'Reviewer access is required.');
       if(request.method==='GET'){
         await prune(db,now);
-        const result=await db.prepare('SELECT receipt,body,status,created_at,reviewed_at FROM submissions ORDER BY created_at DESC LIMIT 200').all();
-        return reply({submissions:result.results.map(row=>({...row,body:row.body==='{}'?null:JSON.parse(row.body)}))});
+        const query=new URL(request.url).searchParams, status=query.get('status')||'pending', after=query.get('after')||'';
+        if(!['pending','approved','rejected'].includes(status)||(after&&!/^[a-f0-9]{32}$/.test(after)))fail(400,'Invalid review page.');
+        const result=await db.prepare('SELECT receipt,body,status,created_at,reviewed_at FROM submissions WHERE status=? AND receipt>? ORDER BY receipt LIMIT 51').bind(status,after).all();
+        const rows=result.results.slice(0,50);
+        return reply({nextCursor:result.results.length>50?rows.at(-1).receipt:null,submissions:rows.map(row=>({...row,body:row.body==='{}'?null:JSON.parse(row.body)}))});
       }
       writeOrigin(request,true);const input=await body(request);
       if(!input||Object.keys(input).sort().join(',')!=='action,receipt'||!['approve','reject'].includes(input.action)||!(/^[a-f0-9]{32}$/.test(input.receipt)))fail(400,'Invalid moderation action.');

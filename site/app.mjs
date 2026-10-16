@@ -3,7 +3,7 @@ import { intakeOrigin, intakeEnabled } from './config.mjs';
 const $ = id => document.getElementById(id);
 const names = { Works: 'Working', Issues: 'With issues', Broken: 'Not working' };
 const checks = ['boot', 'controls', 'audio', 'video', 'save', 'manual'];
-let entries = [], imported = null, generation = 0, sending = false;
+let entries = [], imported = null, generation = 0, sending = false, registryUnavailable = false;
 if(!intakeEnabled){$('send').disabled=true;$('submission-status').textContent='Public submissions are not enabled yet. You can prepare and save a report here, or use the optional GitHub form.';}
 const draftId = crypto.randomUUID().replaceAll('-', ''), draftTime = new Date().toISOString();
 function text(tag, value) { const e = document.createElement(tag); e.textContent = value; return e; }
@@ -58,6 +58,7 @@ function render() {
     const b=text('button',s ? labels[s] : 'All systems'); b.type='button'; b.setAttribute('aria-pressed',String(filters.system===s)); b.append(text('small',String(entries.filter(e=>!s || e.report.console===s).length)));
     b.addEventListener('click',()=>{ $('system').value=s; if(location.hash==='#submit')location.hash='#reports'; render(); }); return b;
   }));
+  if(registryUnavailable){$('count').textContent='Reports unavailable';$('empty').hidden=true;for(const id of ['total','works-total','issues-total','broken-total'])$(id).textContent='-';$('download').disabled=true;}
 }
 $('filters').addEventListener('submit',e=>e.preventDefault()); $('filters').addEventListener('input',render); $('filters').addEventListener('reset',()=>setTimeout(render,0));
 $('close-detail').addEventListener('click',()=>$('detail').close());
@@ -71,13 +72,13 @@ async function jsonFetch(url, options={}) {
   return data;
 }
 async function load() {
-  const results=await Promise.allSettled([jsonFetch('data/reports.json'),intakeEnabled?loadPublicReports():Promise.resolve({schemaVersion:1,reports:[]})]);
+  const results=await Promise.allSettled(intakeEnabled?[jsonFetch('data/reports.json'),loadPublicReports()]:[jsonFetch('data/reports.json')]);
   const combined=new Map(); let failed=0;
   for(const r of results){try{if(r.status!=='fulfilled')throw new Error(); for(const e of validateRegistry(r.value).reports)combined.set(e.report.reportId,e);}catch{failed++;}}
-  if(failed){$('load-error').hidden=false;$('load-error').textContent=failed===2?'Reports could not be loaded. This is not a zero-report result.':'Some reports could not be loaded. Results below may be incomplete; please try again later.';}
+  if(failed){$('load-error').hidden=false;$('load-error').textContent=failed===results.length?'Reports could not be loaded. This is not a zero-report result.':'Some reports could not be loaded. Results below may be incomplete; please try again later.';}
   entries=[...combined.values()].sort((a,b)=>b.report.reportedAtUtc.localeCompare(a.report.reportedAtUtc));
   for(const key of ['version','runtime']) $(key).append(...[...new Set(entries.map(e=>key==='version'?e.report.uifVersion:e.report.evidence.runtime))].sort().map(x=>option(x)));
-  render(); if(failed===2){$('count').textContent='Reports unavailable';$('empty').hidden=true;for(const id of ['total','works-total','issues-total','broken-total'])$(id).textContent='-';$('download').disabled=true;}
+  registryUnavailable=failed===results.length;render();
 }
 async function loadPublicReports() {
   let after='',size=0;const reports=[],seen=new Set();

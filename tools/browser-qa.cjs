@@ -56,6 +56,7 @@ async function main() {
     await livePage.locator('#nav-submit').click();assert.equal(await livePage.locator('#send').isDisabled(),true);
     assert.match(await livePage.locator('#submission-status').innerText(),/not enabled yet/);assert.deepEqual(apiRequests,[]);
     await livePage.screenshot({path:path.join(output,'actual-disabled-intake.png'),fullPage:true});
+    await livePage.locator('#nav-reports').click();
     await livePage.route('**/data/reports.json',route=>route.fulfill({status:503,body:'Unavailable'}));await livePage.reload();
     await livePage.waitForFunction(()=>document.getElementById('count').textContent==='Reports unavailable');
     await livePage.locator('#search').fill('anything');assert.equal(await livePage.locator('#count').innerText(),'Reports unavailable');

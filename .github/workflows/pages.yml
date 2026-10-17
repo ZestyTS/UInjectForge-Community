@@ -3,6 +3,8 @@ on:
   push:
     branches: [main]
   pull_request:
+  release:
+    types: [published]
   workflow_dispatch:
 permissions:
   contents: read
@@ -11,15 +13,30 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build:
+    if: github.event_name != 'release' || (!github.event.release.draft && !github.event.release.prerelease)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'release' && 'main' || github.sha }}
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - run: node --test tests/*.test.mjs
       - run: node --test service/tests/*.test.mjs
+      - name: Generate stable update metadata from the published announcement
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          EXPECTED_RELEASE_ID: ${{ github.event_name == 'release' && github.event.release.id || '' }}
+        run: node tools/release-feed.mjs
       - run: node tools/validate.mjs
+      - uses: actions/upload-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          name: release-metadata-provenance
+          path: outputs/release-generation.json
       - uses: actions/configure-pages@v5
         if: github.event_name != 'pull_request'
       - uses: actions/upload-pages-artifact@v4

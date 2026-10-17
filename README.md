@@ -109,11 +109,37 @@ Do not enable Pages on the private application repository or publish its docs fo
 
 ## Updates
 
-`site/updates/stable.json` points to the official itch.io product, so paid and Demo
-users are not sent to private GitHub releases. Advance `version` only when that
-stable release is actually available. Do not advertise 1.0.6 while still testing.
+`site/updates/stable.json` is generated during Pages publication. It points to the
+official itch.io product, so paid and Demo users are not sent to private GitHub
+releases. Nobody needs to edit the JSON to announce a new version.
 UIF checks this small document only after the user enables launch checks or clicks
 Check for updates. It never downloads or installs an executable.
+
+To publish a stable update:
+
+1. Finish release acceptance and make the actual installers available on itch.io.
+2. In this public repository, publish a non-draft, non-prerelease GitHub Release
+   tagged `v1.0.6` (use the actual version). Add the public release notes and itch.io
+   link, and select Set as latest release. Installers and private source stay out
+   of this repository. Publishing this announcement is the single notification step.
+3. The existing Pages workflow runs tests, reads that published announcement,
+   generates the update feed, and deploys the website. The footer shows the same
+   stable version. Check that the Actions run succeeds before calling it complete.
+
+Every later website push also regenerates from the latest stable announcement,
+so ordinary site updates cannot accidentally restore an old checked-in feed.
+The checked-in 1.0.5 JSON is only the initial baseline for the period before the
+first public stable announcement. Drafts, prereleases, private-repository releases,
+and version numbers from a development build never promote the feed. Failed API
+requests stop publication instead of pretending no release exists. A lower version
+than the deployed feed is refused. No workflow writes commits or needs repo-write
+credentials; GitHub supplies a read-only token for reading public release metadata.
+
+Use Actions > Validate and publish public community site > Run workflow to retry
+or resynchronize. Provenance is retained in its `release-metadata-provenance`
+artifact. The automation cannot verify paid itch.io downloads; the maintainer must
+complete step 1 before publishing the announcement. No 1.0.6 announcement is
+created by the implementation or its tests.
 
 The intended public URL is https://zestyts.github.io/UInjectForge-Community/.
 If the owner selects another repository/host, change the public URLs in the app,

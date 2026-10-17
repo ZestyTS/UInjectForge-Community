@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { validateRegistry, validateReport } from '../site/registry.mjs';
+import { validateStableFeed } from '../site/release.mjs';
 const root = new URL('../', import.meta.url);
 if (process.argv[2]) {
   const bytes = await readFile(process.argv[2]);
@@ -10,6 +11,6 @@ if (process.argv[2]) {
 }
 validateRegistry(JSON.parse(await readFile(new URL('site/data/reports.json', root), 'utf8')));
 const feed = JSON.parse(await readFile(new URL('site/updates/stable.json', root), 'utf8'));
-if (feed.schemaVersion !== 1 || !/^\d+\.\d+\.\d+$/.test(feed.version) || feed.downloadUrl !== 'https://zestyts.itch.io/uinjectforge') throw new Error('Invalid stable feed.');
+validateStableFeed(feed);
 console.log(`Public data validated: ${fileURLToPath(root)}`);
 if ((await readFile(new URL('site/registry.mjs',root),'utf8')) !== (await readFile(new URL('service/registry.mjs',root),'utf8'))) throw new Error('Public and service report validators must match.');

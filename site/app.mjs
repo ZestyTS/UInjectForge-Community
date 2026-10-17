@@ -1,6 +1,7 @@
 import { systems, labels, validateReport, validateRegistry, filterReports } from './registry.mjs';
 import { intakeOrigin, intakeEnabled } from './config.mjs';
 import { filterKeys, readRoute, reportsHash, orderReports, reportPage, parseReceipt, statusLink } from './navigation.mjs';
+import { validateStableFeed } from './release.mjs';
 
 const $ = id => document.getElementById(id);
 const publicSite = 'https://zestyts.github.io/UInjectForge-Community/';
@@ -403,3 +404,8 @@ async function lookupReceipt(value) {
 $('status-form').addEventListener('submit', e => { e.preventDefault(); lookupReceipt($('receipt-input').value); });
 $('refresh-status').addEventListener('click', () => { if (currentReceipt) lookupReceipt(currentReceipt); });
 resetDraft('import'); applyRoute(); load();
+jsonFetch('updates/stable.json', { limit: 2048 }).then(data => {
+  const feed = validateStableFeed(data);
+  $('release-version').textContent = 'Latest stable: ' + feed.version;
+  $('release-version').href = feed.downloadUrl; $('release-version').hidden = false;
+}).catch(() => {});

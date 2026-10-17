@@ -40,6 +40,9 @@ async function main() {
       await page.route('**/api/reports*', r => r.fulfill({ json: registry, headers: cors }));
       await page.route('**/api/receipts/*', r => r.fulfill({ json: { status: receiptState }, headers: cors }));
       await page.goto(base); await page.locator('#empty').waitFor({ state: 'visible' });
+      await page.locator('#release-version').waitFor({ state: 'visible' });
+      assert.match(await page.locator('#release-version').innerText(), /^Latest stable: \d+\.\d+\.\d+$/);
+      assert.equal(await page.locator('#release-version').getAttribute('href'), 'https://zestyts.itch.io/uinjectforge');
       assert.equal(await page.locator('#stats').isVisible(), false);
       await page.screenshot({ path: path.join(output, 'empty-' + width + '.png'), fullPage: true });
       registry = list; await page.reload(); await page.locator('#rows tr').first().waitFor();

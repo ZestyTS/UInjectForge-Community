@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en" data-theme="dark"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer">
+<title>Review Reports | UIF Community</title><link rel="icon" href="/assets/uinjectforge-icon.png"><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/review.css">
+</head><body>
+<header class="topbar"><a class="brand" href="https://zestyts.github.io/UInjectForge-Community/"><img src="/assets/uinjectforge-icon.png" alt="" width="40" height="40"><span>UInjectForge<small>Community review</small></span></a><div class="top-actions"><span id="reviewer" class="small"></span><button id="sign-out" class="quiet" hidden>Sign out</button></div></header>
+<main class="review-main"><h1>Compatibility review</h1><p class="muted">Private submissions. Approval checks scope and privacy, not independent reproduction.</p>
+<p id="message" class="status" role="status">Checking reviewer session...</p>
+<section id="sign-in" hidden><h2>Reviewer sign-in</h2><a href="/auth/login" class="command primary">Sign in with GitHub</a></section>
+<fieldset id="review-controls" class="plain-fieldset" hidden><legend class="sr-only">Report moderation</legend>
+<div class="queue-tools"><label>Report status<select id="status"><option value="pending">Awaiting review</option><option value="approved">Published</option><option value="rejected">Rejected / removed</option></select></label><button id="refresh" class="quiet"><img src="/assets/refresh.svg" alt="" width="16" height="16">Refresh queue</button></div>
+<p id="count" class="small"></p><div id="queue"></div><button id="more" class="quiet" hidden>Load more</button>
+</fieldset><footer><a href="https://zestyts.github.io/UInjectForge-Community/">Community site</a><a href="https://zestyts.github.io/UInjectForge-Community/privacy.html">Privacy</a></footer></main>
+<script type="module" src="/review.mjs"></script></body></html>

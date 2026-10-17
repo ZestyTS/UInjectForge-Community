@@ -4,7 +4,6 @@ const path = require('node:path');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const base = process.env.BASE_URL || 'http://127.0.0.1:4176/';
 const output = process.env.QA_OUTPUT || 'outputs/browser-qa';
-const service = 'https://uif-community-reports.freepig18.chatgpt.site';
 const challenge = '1760000000000.' + 'a'.repeat(32) + '.' + 'b'.repeat(64);
 const cors = { 'Access-Control-Allow-Origin': '*' };
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -22,7 +21,7 @@ async function manual(page) {
 async function main() {
   fs.mkdirSync(output, { recursive: true });
   const { report } = await import('../tests/fixtures.mjs');
-  const { intakeEnabled } = await import('../site/config.mjs');
+  const { intakeEnabled, intakeOrigin: service } = await import('../site/config.mjs');
   const list = { schemaVersion: 1, reports: Array.from({ length: 63 }, (_, i) => {
     const r = report(); r.reportId = i.toString(16).padStart(32, '0'); r.gameName = 'Authored Game ' + String(i).padStart(3, '0');
     r.console = i % 2 ? 'Gcn' : 'Nds'; r.reportedAtUtc = new Date(Date.UTC(2026, 9, 16) - i * 86400000).toISOString();
@@ -179,9 +178,9 @@ async function main() {
       await context.close(); console.log('Usability browser QA passed at ' + width + 'px');
     }
     const real = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
-    const page = await real.newPage(), writes = [];
+    const page = await real.newPage(), writes = [], requests = [];
     if (intakeEnabled && base.startsWith('http://127.0.0.1:')) await page.route('**/api/reports*', r => r.fulfill({ json: { schemaVersion: 1, reports: [] }, headers: cors }));
-    page.on('request', r => { if (r.url().includes('/api/submissions')) writes.push(r.url()); });
+    page.on('request', r => { requests.push(r.url()); if (r.url().includes('/api/submissions')) writes.push(r.url()); });
     await page.goto(base); await page.waitForFunction(() => document.getElementById('count').textContent !== 'Loading reports...');
     assert.equal(await page.locator('#load-error').isVisible(), false);
     await page.locator('#nav-submit').click(); await page.locator('#entry-mode [value=manual]').check();
@@ -196,7 +195,9 @@ async function main() {
     await page.route('**/api/reports*', r => r.fulfill({ json: { schemaVersion: 1, reports: [] }, headers: cors }));
     await page.locator('#retry-load').click(); await page.waitForFunction(() => document.getElementById('load-error').hidden);
     assert.equal(await page.locator('#load-error').isVisible(), false); assert.equal(await page.locator('#count').innerText(), '0 reports');
-    await real.close(); console.log('Actual intake state, no automatic upload, outage and retry checks passed');
+    assert.ok(!requests.some(url => url.includes('chatgpt.site') || url.includes('openai.com')));
+    assert.equal(await page.getByRole('link', { name: 'Reviewer sign-in', exact: true }).getAttribute('href'), service + '/review');
+    await real.close(); console.log('Actual intake state, no automatic upload, no legacy-host requests, outage and retry checks passed');
   } finally { await browser.close(); }
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

@@ -44,7 +44,9 @@ export function parseReceipt(value, serviceOrigin) {
   try {
     const url = new URL(input);
     if (url.username || url.password || url.search) throw new Error();
-    if (url.origin === serviceOrigin && /^\/receipt\/[a-f0-9]{32}$/i.test(url.pathname) && !url.hash)
+    // Old status links supply an ID only; requests always use the current service.
+    if ([serviceOrigin, 'https://uif-community-reports.freepig18.chatgpt.site'].includes(url.origin)
+      && /^\/receipt\/[a-f0-9]{32}$/i.test(url.pathname) && !url.hash)
       return url.pathname.split('/').at(-1).toLowerCase();
     const match = /^#status\?receipt=([a-f0-9]{32})$/i.exec(url.hash);
     if (url.origin === 'https://zestyts.github.io' && url.pathname === '/UInjectForge-Community/' && match)

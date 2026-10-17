@@ -31,12 +31,13 @@ available, explicitly without captured runtime evidence. No upload happens until
 the user consents and chooses Submit for review. The optional GitHub issue form
 is no longer the intended primary submission route.
 
-The public no-account intake is live on a separate persistent Sites/Cloudflare D1
-service at https://uif-community-reports.freepig18.chatgpt.site . New reports enter
+The public no-account intake uses a separate Worker and D1 database in the project
+owner's Cloudflare account at https://uinjectforge-community-reports.i-wo.workers.dev . New reports enter
 a private review queue and receive a status receipt. Reviewer sign-in is at
-https://uif-community-reports.freepig18.chatgpt.site/review . Submitters need no
-GitHub or ChatGPT account. Only the configured reviewer can publish or remove
-reports; there is no automatic publication.
+https://uinjectforge-community-reports.i-wo.workers.dev/review and uses GitHub
+public identity only. Submitters need no account. Only the configured reviewer
+can publish or remove reports; there is no automatic publication. Deployment and
+the two separate secret bindings are documented in [worker/README.md](worker/README.md).
 
 `site/config.mjs` enables intake after deployment and anonymous read/write,
 moderation-isolation and forged-identity checks. If intake must be disabled,
@@ -93,8 +94,8 @@ node tools/validate.mjs
 ```
 
 The no-account service stores new reports privately, deduplicates retries, and
-returns a receipt. Only its configured reviewer, authenticated by the hosting
-platform, can publish/remove results at `/review`. The public registry merges
+returns a receipt. Only its configured reviewer, authenticated with GitHub and
+checked against an immutable account ID, can publish/remove results at `/review`. The public registry merges
 approved service reports with the reviewed GitHub JSON file, preserving distinct
 build evidence. Signed expiring one-use browser verification, bounded requests,
 strict schemas, intake limits and moderation reduce abuse; they do not eliminate

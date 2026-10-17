@@ -25,6 +25,7 @@ jobs:
           node-version: '22'
       - run: node --test tests/*.test.mjs
       - run: node --test service/tests/*.test.mjs
+      - run: node --test worker/tests/*.test.mjs
       - name: Generate stable update metadata from the published announcement
         if: github.event_name != 'pull_request'
         env:

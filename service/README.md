@@ -2,17 +2,19 @@
 
 This is the framework-independent request handler and its schema/migration/tests
 for the UIF public intake service. It is NOT hosted by GitHub Pages. The deployed
-Sites project wraps `handle(request, env)` in a dynamic API route, and separately
-hosts owner-only review and receipt-status pages. Its Vinext starter source is
-kept in the same Site's source repository.
+Cloudflare Worker wraps `handle(request, env, context)` with its trusted origin
+and server-verified reviewer authorization. See [../worker/README.md](../worker/README.md)
+for deployment and GitHub sign-in. The previous Sites adapter is retained only
+for historical compatibility; it is not the current deployment route.
 
 Required runtime bindings, configured outside source:
 
 - `DB`: provisioned Cloudflare D1 database, migrations applied before deployment.
 - `INTAKE_SECRET`: random server-side signing/rate-limit secret.
-- `MODERATOR_EMAIL`: explicitly allowed reviewer account. Hosting supplies and
+- Legacy Sites adapter only: `MODERATOR_EMAIL` explicitly allowed reviewer account. Hosting supplies and
   protects `oai-authenticated-user-*` identity headers. Never deploy this handler
-  behind a proxy that lets visitors forge those headers.
+  behind a proxy that lets visitors forge those headers. The Cloudflare Worker
+  does not trust those headers and always supplies an explicit moderator context.
 
 `GET /api/challenge`, `POST /api/submissions` (consent, report, honeypot, signed
 challenge, proof), `GET /api/reports?after=receipt` (100 approved reports/page),

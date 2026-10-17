@@ -16,9 +16,9 @@ async function sign(secret, value) {
 }
 function equal(a, b) { if (a.length !== b.length) return false; let result=0; for(let i=0;i<a.length;i++)result |= a.charCodeAt(i)^b.charCodeAt(i); return result===0; }
 function fail(status, message) { throw Object.assign(new Error(message), { status }); }
-function cors(request) {
+function cors(request, serviceOrigin = ownOrigin) {
   const origin = request.headers.get('origin');
-  return { 'Access-Control-Allow-Origin': origin === allowedOrigin ? origin : ownOrigin, 'Vary':'Origin', 'Access-Control-Allow-Methods':'GET, POST, OPTIONS', 'Access-Control-Allow-Headers':'Content-Type', 'Cache-Control':'no-store', 'X-Content-Type-Options':'nosniff', 'Referrer-Policy':'no-referrer' };
+  return { 'Access-Control-Allow-Origin': origin === allowedOrigin ? origin : serviceOrigin, 'Vary':'Origin', 'Access-Control-Allow-Methods':'GET, POST, OPTIONS', 'Access-Control-Allow-Headers':'Content-Type', 'Cache-Control':'no-store', 'X-Content-Type-Options':'nosniff', 'Referrer-Policy':'no-referrer' };
 }
 async function body(request) {
   if (!request.headers.get('content-type')?.startsWith('application/json')) fail(415,'Send a JSON report.');
@@ -29,9 +29,9 @@ async function body(request) {
   const bytes=new Uint8Array(size);let offset=0;for(const part of parts){bytes.set(part,offset);offset+=part.byteLength;}
   try{return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}catch{fail(400,'Invalid JSON report.');}
 }
-function writeOrigin(request, moderator=false) {
+function writeOrigin(request, moderator=false, serviceOrigin=ownOrigin) {
   const origin=request.headers.get('origin');
-  if(moderator ? origin!==ownOrigin : ![allowedOrigin,ownOrigin].includes(origin))fail(403,'This submission origin is not allowed.');
+  if(moderator ? origin!==serviceOrigin : ![allowedOrigin,serviceOrigin].includes(origin))fail(403,'This submission origin is not allowed.');
 }
 export function isModerator(headers, env) {
   return Boolean(env.MODERATOR_EMAIL && headers.get('oai-authenticated-user-id') && headers.get('oai-authenticated-user-email')?.toLowerCase()===env.MODERATOR_EMAIL.toLowerCase());
@@ -50,15 +50,17 @@ async function prune(db, now) {
     db.prepare('DELETE FROM rate_limits WHERE expires_at < ?').bind(now),
   ]);
 }
-export async function handle(request, env) {
-  const headers=cors(request), reply=(data,status=200)=>Response.json(data,{status,headers});
+export async function handle(request, env, context = {}) {
+  const serviceOrigin=context.origin||ownOrigin;
+  const headers=cors(request,serviceOrigin), reply=(data,status=200)=>Response.json(data,{status,headers});
   try{
     const path=new URL(request.url).pathname;
-    if(request.method==='OPTIONS'){writeOrigin(request);return new Response(null,{status:204,headers});}
+    if(new URL(serviceOrigin).origin!==serviceOrigin||!serviceOrigin.startsWith('https://'))fail(503,'Report service origin is not configured.');
+    if(request.method==='OPTIONS'){writeOrigin(request,false,serviceOrigin);return new Response(null,{status:204,headers});}
     if(!env.DB||!env.INTAKE_SECRET)fail(503,'Report service is not configured. Save your report and try later.');
     const db=env.DB, now=Date.now();
     if(request.method==='GET'&&path==='/api/challenge'){
-      const origin=request.headers.get('origin')||ownOrigin;if(![allowedOrigin,ownOrigin].includes(origin))fail(403,'Origin not allowed.');
+      const origin=request.headers.get('origin')||serviceOrigin;if(![allowedOrigin,serviceOrigin].includes(origin))fail(403,'Origin not allowed.');
       await prune(db,now);const payload=now+'.'+randomId();
       return reply({challenge:payload+'.'+await sign(env.INTAKE_SECRET,payload+'.'+origin)});
     }
@@ -74,7 +76,7 @@ export async function handle(request, env) {
       if(!row)fail(404,'Receipt not found or expired.');return reply({status:row.status});
     }
     if(request.method==='POST'&&path==='/api/submissions'){
-      writeOrigin(request);const input=await body(request);
+      writeOrigin(request,false,serviceOrigin);const input=await body(request);
       if(!input||Object.keys(input).sort().join(',')!=='challenge,consent,proof,report,website'||input.consent!==true||input.website!=='')fail(400,'Review the report and publication consent.');
       try{validateReport(input.report);}catch(error){fail(400,error.message);}
       const nonce=await checkChallenge(input.challenge,input.proof,request.headers.get('origin'),env,now);
@@ -102,7 +104,8 @@ export async function handle(request, env) {
       return reply({receipt,duplicate:false},202);
     }
     if(path==='/api/moderation'&&['GET','POST'].includes(request.method)){
-      if(!isModerator(request.headers,env))fail(403,'Reviewer access is required.');
+      const authorized=Object.hasOwn(context,'moderator')?context.moderator===true:isModerator(request.headers,env);
+      if(!authorized)fail(403,'Reviewer access is required.');
       if(request.method==='GET'){
         await prune(db,now);
         const query=new URL(request.url).searchParams, status=query.get('status')||'pending', after=query.get('after')||'';
@@ -111,7 +114,7 @@ export async function handle(request, env) {
         const rows=result.results.slice(0,50);
         return reply({nextCursor:result.results.length>50?rows.at(-1).receipt:null,submissions:rows.map(row=>({...row,body:row.body==='{}'?null:JSON.parse(row.body)}))});
       }
-      writeOrigin(request,true);const input=await body(request);
+      writeOrigin(request,true,serviceOrigin);const input=await body(request);
       if(!input||Object.keys(input).sort().join(',')!=='action,receipt'||!['approve','reject'].includes(input.action)||!(/^[a-f0-9]{32}$/.test(input.receipt)))fail(400,'Invalid moderation action.');
       const row=await db.prepare('SELECT status,body FROM submissions WHERE receipt=?').bind(input.receipt).first();
       if(!row)fail(404,'Submission not found.');

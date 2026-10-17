@@ -1,3 +1,3 @@
-export const intakeOrigin = 'https://uif-community-reports.freepig18.chatgpt.site';
+export const intakeOrigin = 'https://uinjectforge-community-reports.i-wo.workers.dev';
 // Enable only after the persistent service is deployed and verified anonymously.
 export const intakeEnabled = true;

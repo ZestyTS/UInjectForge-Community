@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readRoute, reportsHash, orderReports, reportPage, parseReceipt, statusLink } from '../site/navigation.mjs';
 import { report } from './fixtures.mjs';
-const origin = 'https://uif-community-reports.freepig18.chatgpt.site';
+import { intakeOrigin as origin } from '../site/config.mjs';
 test('filters, order and page round-trip without interpreting text as markup', () => {
  const filters={search:'game & <text>',system:'Nds',outcome:'Issues',environment:'Aroma',version:'1.0.6+abc',runtime:'NooDS'};
  const state=readRoute(reportsHash(filters,'game',3));assert.deepEqual(state.filters,filters);assert.equal(state.sort,'game');assert.equal(state.page,3);
@@ -32,4 +32,10 @@ test('receipt input accepts only exact IDs and trusted status URLs',()=>{
  const link=statusLink('https://zestyts.github.io/UInjectForge-Community/?ignored=1',id);assert.equal(parseReceipt(link,origin),id);assert.ok(!new URL(link).search);
  assert.equal(parseReceipt(link.replace('#status?receipt=', '#STATUS?RECEIPT='),origin),id);
  for(const input of ['123456','javascript:alert(1)','https://evil.test/receipt/'+id,origin+'/receipt/'+id+'?x=1','https://fake@uif-community-reports.freepig18.chatgpt.site/receipt/'+id])assert.throws(()=>parseReceipt(input,origin));
+});
+
+test('legacy status links retain only their receipt ID after the service migration',()=>{
+ const legacy='https://uif-community-reports.freepig18.chatgpt.site', id='d'.repeat(32);
+ assert.equal(parseReceipt(legacy+'/receipt/'+id,origin),id);
+ for(const input of [legacy+'.evil.test/receipt/'+id,legacy+'/receipt/'+id+'#other',legacy+'/api/receipts/'+id])assert.throws(()=>parseReceipt(input,origin));
 });

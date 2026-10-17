@@ -56,6 +56,26 @@ The outcome is one reporter's observation. Individual boot/control/audio/video/
 save/manual checks remain Not tested unless explicitly selected. A report with
 missing evidence is still useful, but cannot establish an exact runtime match.
 
+## Browsing and receipts
+
+Filters, sorting, and page selection are included in shareable links. Individual
+reports also have permanent links. Results are paged in groups of 25; the download
+button saves every matching report, not only the visible page. If a source fails,
+the site labels the results as incomplete or unavailable and offers a retry.
+
+Import and manual entry are separate modes. Imported build identity stays locked;
+manual entries default to an unknown console environment. The form freezes during
+submission, preserving the report snapshot being sent. Stop waiting cancels the
+browser request, not a submission the server may already have received. Retrying
+identical contents returns the same receipt rather than creating another report.
+
+After submitting, save the private receipt or copy its status link. Status lookup
+is available on the community site without signing in. Links carry the receipt in
+the URL fragment; lookup then sends it explicitly to the report service. Status
+reveals only review state, never pending report contents. Receipts and drafts are
+not automatically stored between visits. Save report is a local export and does
+not submit anything. Creating a new draft preserves the last receipt in memory.
+
 ## Human review and publication
 
 Check privacy, actual UIF version, source/base identity, evidence scope and whether

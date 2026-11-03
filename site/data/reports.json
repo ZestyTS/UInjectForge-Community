@@ -1,1 +1,40 @@
-{ "schemaVersion": 1, "reports": [] }
+{
+  "schemaVersion": 1,
+  "reports": [
+    {
+      "report": {
+        "schemaVersion": 1,
+        "reportId": "8f70a240ad8b4f9cb7e9db2c03ee4f97",
+        "reportedAtUtc": "2026-11-03T02:14:48Z",
+        "builtAtUtc": "2026-09-08T00:00:00Z",
+        "uifVersion": "Unknown (historical test)",
+        "console": "Psp",
+        "outputMode": "Installable",
+        "gameName": "Street Fighter Alpha 3 MAX",
+        "gameId": "",
+        "gameRegion": "",
+        "gameRevision": "",
+        "baseName": "Not recorded",
+        "baseTitleId": "",
+        "customBase": false,
+        "buildSucceeded": null,
+        "environment": "Tiramisu",
+        "outcome": "Works",
+        "checks": { "boot": "Pass" },
+        "notes": "The tester reached gameplay on Wii U under Tiramisu. Controls, audio, video, saving, and long-session stability were not separately verified. The build date shown is the date of the earliest recovered test summary, not the actual build date. This result does not validate Aroma or the later SD-copy safety changes.",
+        "evidence": {
+          "runtime": "Nico-compatible PPSSPP",
+          "settings": {},
+          "fingerprints": {},
+          "omittedOptions": 0,
+          "scope": "Historical hardware observation recorded in the September 8, 2026 test summary. Original build log and exact runtime fingerprint were not recovered."
+        }
+      },
+      "review": {
+        "reviewer": "UIF maintainer record",
+        "reviewedAtUtc": "2026-11-03T02:14:48Z",
+        "issueUrl": ""
+      }
+    }
+  ]
+}

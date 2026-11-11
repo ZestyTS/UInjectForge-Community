@@ -1,0 +1,124 @@
+[
+  {
+    "version": "1.0.5",
+    "date": "2026-09-18",
+    "sections": [
+      {
+        "title": "New Features",
+        "items": [
+          "Saved custom banner and menu-icon templates, with editable artwork/text placement.",
+          "Recognition of the 21 known UWUVCI template layouts for user-supplied imports.",
+          "Advanced Wii game-file export, extraction management, and revision-checked executable patch tools.",
+          "Linux downloads use .tar.gz instead of ZIP, preserving executable permissions."
+        ]
+      },
+      {
+        "title": "Improvements",
+        "items": [
+          "Clearer build/download activity and more consistent Simple/Advanced controls.",
+          "Improved artwork previews, bundled fonts, text-fit checks, and draft handling.",
+          "Better light-theme contrast and more consistent button alignment.",
+          "Easier access to separate runtime and optional Wii U companion downloads.",
+          "Clearer base-download diagnostics and GameCube SD-card troubleshooting."
+        ]
+      },
+      {
+        "title": "Bug Fixes",
+        "items": [
+          "Fixed Wii extraction/rebuilding for internal filenames that are not portable to Windows.",
+          "Fixed the Linux executable name being mistaken for a .desktop shortcut.",
+          "Fixed imported-template text and menu-icon layout handling.",
+          "Fixed a Simple/Advanced switching crash involving Wii disc-preparation selection.",
+          "Corrected passthrough defaults for patched retail Wii executables.",
+          "Fixed GameCube autobooter validation of malformed controller-count values in Nintendont configs.",
+          "Improved storage cleanup, retry behavior, and preservation of existing runtime settings."
+        ]
+      }
+    ]
+  },
+  {
+    "version": "1.0.4",
+    "date": "2026-09-08",
+    "sections": [
+      {
+        "title": "New Features",
+        "items": [
+          "Named artwork sets can be saved, reused, renamed, and removed.",
+          "Import your own templates and adjust image placement in original VC-style layouts.",
+          "Convert compatible 16-bit PCM WAV boot sounds, with preview of the converted six-second output."
+        ]
+      },
+      {
+        "title": "Improvements",
+        "items": [
+          "Clearer artwork choices, frame previews, base-download checks, and retry feedback.",
+          "Improved removable-drive detection and Linux diagnostics.",
+          "Advanced Wii options include clearer compatibility guidance and a reset to recommended wrapper settings."
+        ]
+      },
+      {
+        "title": "Bug Fixes",
+        "items": [
+          "Fixed first-run data-folder handling on Bazzite and other immutable Linux systems.",
+          "Fixed console payload paths that could work on Windows but fail on Linux."
+        ]
+      }
+    ]
+  },
+  {
+    "version": "1.0.2",
+    "date": "2026-09-02",
+    "sections": [
+      {
+        "title": "Bug Fixes",
+        "items": [
+          "Fixed base-download validation incorrectly rejecting valid Title ID and Title Key combinations.",
+          "Replaced affected macOS downloads with newly signed and notarized packages that retain required symbolic links and executable permissions."
+        ]
+      }
+    ]
+  },
+  {
+    "version": "1.0.1",
+    "date": "2026-08-31",
+    "sections": [
+      {
+        "title": "New Features",
+        "items": [
+          "Native macOS downloads join Windows and Linux.",
+          "Separate Windows ARM64 and Linux ARM64 preview downloads are available."
+        ]
+      },
+      {
+        "title": "Improvements",
+        "items": [
+          "The first-use guide adds Back, Next, page numbers, and Skip.",
+          "New profiles enable Guided Tips by default while preserving existing preferences.",
+          "Custom WAV and BTSND boot sounds can be selected, previewed, or cleared from either mode."
+        ]
+      },
+      {
+        "title": "Bug Fixes",
+        "items": [
+          "Wii runtime options refresh correctly when switching Simple and Advanced modes.",
+          "Automatic SD copying works for single builds as well as batches.",
+          "Valid macOS and Linux data folders are no longer incorrectly rejected as filesystem roots."
+        ]
+      }
+    ]
+  },
+  {
+    "version": "1.0.0",
+    "date": "2026-08-31",
+    "sections": [
+      {
+        "title": "New Features",
+        "items": [
+          "The initial Windows and Linux release brings game preparation, artwork, runtime settings, building, and transfer tools into one workflow.",
+          "Simple and Advanced modes organize the Base/Runtime, Game, Artwork, and Build steps.",
+          "Supported compressed inputs, split Wii WBFS handling, batch builds, storage controls, and support bundles help prepare and troubleshoot owned game backups."
+        ]
+      }
+    ]
+  }
+]

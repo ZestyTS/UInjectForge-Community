@@ -116,14 +116,53 @@ releases. Nobody needs to edit the JSON to announce a new version.
 UIF checks this small document only after the user enables launch checks or clicks
 Check for updates. It never downloads or installs an executable.
 
+`site/updates/releases.json` is the authored versioned changelog shared with UIF's
+offline release history. Each entry contains its version, date and sections, and
+can also contain a plain title and the owner's `announcementMarkdown`. A null
+date is an unpublished draft. Keep the personal announcement and short change
+sections in this one record rather than maintaining separate announcement copies.
+The Releases page reads this same catalog and keeps earlier versions accessible.
+
+Publication stages the site into `outputs/public-site`; it never rewrites the
+authored catalog or the checked-in stable baseline. Only dated entries at or below
+the actual advertised stable version enter the staged catalog. The advertised
+version must have its own dated entry. The workflow validates and deploys that
+stage, so adding an undated future announcement cannot publish it accidentally.
+The stable feed retains its exact three-field schema for existing UIF versions.
+
+For a local, unpublished announcement handoff from a selected entry:
+
+```
+node tools/export-release-catalog.mjs --input site/updates/releases.json --announcement-version 1.1.0 --announcement-output /new/outside-site/announcement
+```
+
+This creates `title.txt`, `announcement.md` and `announcement.html` in a fresh
+directory. Both body formats contain the personal narrative followed by the TL;DR
+sections. Raw HTML is escaped; HTML output supports only simple headings,
+paragraphs, lists, inline code and HTTPS links. This command can preview an
+undated draft without changing its date or advertising it as a release.
+
+The private-repository public exporter filters the catalog into its separate
+destination too. Its default ceiling is the checked-in stable baseline. The
+owner may pass `-PublishedStableVersion` only as an attestation that the selected
+version's actual stable itch.io downloads are already live. Its Community GitHub
+Release does not need to exist yet. This prepares approved public source; it does
+not change the advertised stable feed. Public source exports never include
+undated draft narratives.
+
 To publish a stable update:
 
 1. Finish release acceptance and make the actual installers available on itch.io.
-2. In this public repository, publish a non-draft, non-prerelease GitHub Release
-   tagged `v1.0.6` (use the actual version). Add the public release notes and itch.io
-   link, and select Set as latest release. Installers and private source stay out
-   of this repository. Publishing this announcement is the single notification step.
-3. The existing Pages workflow runs tests, reads that published announcement,
+2. Date the approved entry in the authoritative catalog and export the public
+   source with `-PublishedStableVersion` set to the live itch.io version. Review
+   and push that source. Until the Community announcement is published, Pages
+   still stages only entries at or below the previously advertised stable version.
+3. In this public repository, publish a non-draft, non-prerelease GitHub Release
+   tagged with the published version, such as `v1.1.0`. Add the public release
+   notes and itch.io link, then select **Set as latest release**. The announcement
+   starts the update notification workflow. Installers and private source stay
+   out of this repository.
+4. The existing Pages workflow runs tests, reads that published announcement,
    generates the update feed, and deploys the website. The footer shows the same
    stable version. Check that the Actions run succeeds before calling it complete.
 
@@ -138,9 +177,8 @@ credentials; GitHub supplies a read-only token for reading public release metada
 
 Use Actions > Validate and publish public community site > Run workflow to retry
 or resynchronize. Provenance is retained in its `release-metadata-provenance`
-artifact. The automation cannot verify paid itch.io downloads; the maintainer must
-complete step 1 before publishing the announcement. No 1.0.6 announcement is
-created by the implementation or its tests.
+artifact. The owner handles itch.io uploads and publication. Confirm the downloads
+are available before publishing the community announcement.
 
 The intended public URL is https://zestyts.github.io/UInjectForge-Community/.
 If the owner selects another repository/host, change the public URLs in the app,

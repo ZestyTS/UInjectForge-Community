@@ -1,7 +1,9 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
+import { dirname, resolve, relative, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { compareVersions, validateStableFeed, versionParts, downloadUrl } from '../site/release.mjs';
+import { parseReleaseCatalog } from '../site/release-catalog.mjs';
+import { stagePublicSite } from './stage-public-site.mjs';
 
 export const repository = 'ZestyTS/UInjectForge-Community';
 export const latestReleaseUrl = 'https://api.github.com/repos/' + repository + '/releases/latest';
@@ -60,18 +62,32 @@ export async function generateCurrentFeed({ baseline, fetchImpl = fetch, token =
 
 async function main() {
   const root = fileURLToPath(new URL('../', import.meta.url));
-  let output = resolve(root, 'site/updates/stable.json'), evidence = resolve(root, 'outputs/release-generation.json');
+  let siteOutput = resolve(root, 'outputs/public-site'), output = null;
+  let evidence = resolve(root, 'outputs/release-generation.json');
   const args = process.argv.slice(2);
   for (let i = 0; i < args.length; i += 2) {
-    if (!args[i + 1] || !['--output', '--evidence'].includes(args[i])) throw new Error('Use --output path and/or --evidence path.');
-    if (args[i] === '--output') output = resolve(args[i + 1]); else evidence = resolve(args[i + 1]);
+    if (!args[i + 1] || !['--output', '--evidence', '--site-output'].includes(args[i]))
+      throw new Error('Use --output, --evidence and/or --site-output paths.');
+    if (args[i] === '--output') output = resolve(args[i + 1]);
+    else if (args[i] === '--site-output') siteOutput = resolve(args[i + 1]);
+    else evidence = resolve(args[i + 1]);
+  }
+  const authorSite = resolve(root, 'site');
+  for (const destination of [siteOutput, evidence, ...(output ? [output] : [])]) {
+    const path = relative(authorSite, destination);
+    if (!path || (path !== '..' && !path.startsWith('..' + sep)))
+      throw new Error('Generated release outputs must not overwrite the authored site.');
   }
   const baseline = JSON.parse(await readFile(resolve(root, 'site/updates/stable.json'), 'utf8'));
+  const catalog = parseReleaseCatalog(await readFile(resolve(root, 'site/updates/releases.json'), 'utf8'));
   const expectedReleaseId = process.env.EXPECTED_RELEASE_ID ? Number(process.env.EXPECTED_RELEASE_ID) : null;
   const result = await generateCurrentFeed({ baseline, token: process.env.GITHUB_TOKEN || '', expectedReleaseId });
-  for (const [file, value] of [[output, result.feed], [evidence, result.evidence]]) {
+  const published = await stagePublicSite({ source: authorSite, output: siteOutput, catalog, feed: result.feed });
+  result.evidence.publicCatalogVersions = published.map(entry => entry.version);
+  result.evidence.undatedOrNewerEntriesExcluded = catalog.length - published.length;
+  for (const [file, value] of [...(output ? [[output, result.feed]] : []), [evidence, result.evidence]]) {
     await mkdir(dirname(file), { recursive: true });
-    await writeFile(file, JSON.stringify(value, null, 2) + '\n');
+    await writeFile(file, JSON.stringify(value, null, 2) + '\n', { flag: 'wx' });
   }
   console.log('Generated stable feed ' + result.feed.version + ' from ' + result.evidence.source + '. Installers remain on itch.io.');
 }

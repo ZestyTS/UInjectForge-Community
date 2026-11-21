@@ -1,0 +1,30 @@
+[
+  {
+    "version": "1.1.1",
+    "date": "2026-11-20",
+    "sections": [
+      {
+        "title": "New Features",
+        "items": [
+          "Follow the optional Guide through the workbench and read mobile What’s New.",
+          "Refresh history requests published release-note text; bundled notes remain available offline.",
+          "Supported Wii custom-executable workflows offer cafe2wii and optional IOP2X patching with your own local support files and keys. The finished title requires the supported c2w Aroma plugin and installation to Wii U system memory."
+        ]
+      },
+      {
+        "title": "Improvements",
+        "items": [
+          "Choose Simple or Advanced, review readiness and save finished build ZIPs with Files.",
+          "The iOS edition uses local game, base, runtime, artwork and manual inputs. Release-note metadata and local-network transfers are separate from game-content downloads."
+        ]
+      },
+      {
+        "title": "Bug Fixes",
+        "items": [
+          "Corrected Wii Trim preparation for supported custom-executable and cafe2wii workflows.",
+          "Finished build exports open the Files save dialog reliably."
+        ]
+      }
+    ]
+  }
+]

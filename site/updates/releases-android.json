@@ -1,0 +1,28 @@
+[
+  {
+    "version": "1.1.1",
+    "date": "2026-11-20",
+    "sections": [
+      {
+        "title": "New Features",
+        "items": [
+          "Follow the optional Guide and read mobile What’s New, with explicit release-history refresh and offline notes.",
+          "Supported Wii custom-executable workflows offer cafe2wii and optional IOP2X patching. The finished title requires the supported c2w Aroma plugin and installation to Wii U system memory."
+        ]
+      },
+      {
+        "title": "Improvements",
+        "items": [
+          "Use Android’s system picker for inputs and finished ZIP export.",
+          "Simple/Advanced workflows and supported online content options remain available."
+        ]
+      },
+      {
+        "title": "Bug Fixes",
+        "items": [
+          "Corrected Wii Trim preparation for supported custom-executable and cafe2wii workflows."
+        ]
+      }
+    ]
+  }
+]
